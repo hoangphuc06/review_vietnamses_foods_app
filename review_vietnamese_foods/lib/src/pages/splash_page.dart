@@ -1,9 +1,11 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:tflite_flutter_plugin_example/src/common_widgets/button_icon.dart';
 import 'package:tflite_flutter_plugin_example/src/pages/login_page.dart';
 
-import '../common_widgets/rounded_button.dart';
+import '../common_widgets/button_not_icon.dart';
+
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -54,22 +56,17 @@ class _SplashPageState extends State<SplashPage> {
                         fontSize: 17.0),
                   ),
                 ),
-                createButton(
-                    context: context,
-                    func: () {
-                      //Navigator.pushNamed(context, 'login');
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
-                    },
-                    labelButton: 'Login with your account',
-                    buttonColor: Colors.orange,
+                Padding(
+                  padding: const EdgeInsets.only(left: 30, right: 30),
+                  child: buttonNotIcon(context, "Login with your account", Colors.white, Colors.orange, (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                  }),
                 ),
-                createButton(
-                    context: context,
-                    func: () => print('goToFacebook'),
-                    isWithIcon: true,
-                    labelButton: 'Login with facebook',
-                    buttonColor: Color.fromRGBO(0, 122, 255, 1.0),
-                    icon: AssetImage('assets/images/ic/ic_fb.png')
+                Padding(
+                  padding: const EdgeInsets.only(left: 30, right: 30, top: 20),
+                  child: buttonIcon(context, "Login with Facebook", Colors.white, Color.fromRGBO(0, 122, 255, 1.0), AssetImage('assets/images/ic/ic_fb.png'),(){
+                    print('goToFacebook');
+                  }),
                 ),
                 SizedBox(height: 100,)
               ],
