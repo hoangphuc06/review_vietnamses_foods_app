@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "173617738310",
+    "project_id": "review-vietnamese-foods-app",
+    "storage_bucket": "review-vietnamese-foods-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:173617738310:android:a9440f5b7fd9bacec71047",
+        "android_client_info": {
+          "package_name": "com.tfliteflutter.tflite_flutter_plugin_example"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "173617738310-hs94ptcq755jnsdu3s9cm15012o9ufb1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0MrvA6QXqhtiiIxdrTcYhQDJZI0f7o7M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "173617738310-hs94ptcq755jnsdu3s9cm15012o9ufb1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
