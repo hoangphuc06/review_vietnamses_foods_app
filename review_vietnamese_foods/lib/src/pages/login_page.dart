@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tflite_flutter_plugin_example/src/common_widgets/button_not_icon.dart';
+import 'package:tflite_flutter_plugin_example/src/pages/home_guest_page.dart';
+import 'package:tflite_flutter_plugin_example/src/pages/home_owner_page.dart';
 import 'package:tflite_flutter_plugin_example/src/pages/signup_page.dart';
 
 import '../dialogs/loading_dialog.dart';
@@ -160,10 +162,10 @@ class _LoginPageState extends State<LoginPage> {
 
           FirebaseFirestore.instance.collection("USER").doc(userCredential.user!.uid).get().then((value) => {
             if (value["role"]=="guest") {
-              print("Đăng nhập guest thành công")
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeGuestPage())),
             }
             else {
-              print("Đăng nhập owner thành công")
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeOwnerPage())),
             }
           });
 
