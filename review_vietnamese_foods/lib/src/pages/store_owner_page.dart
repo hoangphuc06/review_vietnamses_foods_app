@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tflite_flutter_plugin_example/src/pages/add_food_page.dart';
 
+import 'edit_store_page.dart';
+
 class StoreOwnerPage extends StatefulWidget {
   final QueryDocumentSnapshot store;
   const StoreOwnerPage({Key? key, required this.store}) : super(key: key);
@@ -14,6 +16,8 @@ class StoreOwnerPage extends StatefulWidget {
 class _StoreOwnerPageState extends State<StoreOwnerPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -23,9 +27,11 @@ class _StoreOwnerPageState extends State<StoreOwnerPage> {
         slivers: [
           SliverAppBar(
             actions: [
-              // IconButton(icon: Icon(Icons.bookmark, color: Colors.white,),
-              //   onPressed: () {},
-              // ),
+              IconButton(icon: Icon(Icons.settings, color: Colors.white,),
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => EditStorePage(store: this.widget.store,)));
+                },
+              ),
             ],
             iconTheme: IconThemeData(
                 color: Colors.white
@@ -36,48 +42,55 @@ class _StoreOwnerPageState extends State<StoreOwnerPage> {
             snap: false,
             expandedHeight: 216.5,
             flexibleSpace: FlexibleSpaceBar(
-              background: Stack(
-                children: [
-                  Image.network(this.widget.store["images"][0], fit: BoxFit.cover, height: 250, width: size.width,),
-                  Container(
-                    height: 250, width: size.width,
-                    color: Colors.black.withOpacity(0.4),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.end,
+              background: StreamBuilder(
+                stream: _firestore.collection("STORE").where("idStore", isEqualTo: this.widget.store["idStore"]).snapshots(),
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.data != null) {
+                    return Stack(
                       children: [
-                        Text(
-                          this.widget.store["storeName"],
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              fontSize: 20
-                          ),
+                        Image.network(snapshot.data!.docs[0]["images"][0], fit: BoxFit.cover, height: 250, width: size.width,),
+                        Container(
+                          height: 250, width: size.width,
+                          color: Colors.black.withOpacity(0.4),
                         ),
-                        SizedBox(height: 5,),
-                        Text(
-                          "Address: " + this.widget.store["address"],
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15
-                          ),
-                        ),
-                        SizedBox(height: 5,),
-                        Text(
-                          "Phone Number: " + this.widget.store["phoneNumber"],
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15
-                          ),
-                        ),
-                        SizedBox(height: 20,)
-                      ],
-                    ),
-                  )
-                ],
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text(
+                                this.widget.store["storeName"],
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    fontSize: 20
+                                ),
+                              ),
+                              SizedBox(height: 5,),
+                              Text(
+                                "Address: " + snapshot.data!.docs[0]["address"],
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15
+                                ),
+                              ),
+                              SizedBox(height: 5,),
+                              Text(
+                                "Phone Number: " + snapshot.data!.docs[0]["phoneNumber"],
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15
+                                ),
+                              ),
+                              SizedBox(height: 20,)]
+                          )
+                      )
+                    ]);
+                  } else {
+                    return Container();
+                  }
+                },
               ),
             ),
           ),
