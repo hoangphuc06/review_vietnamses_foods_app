@@ -277,14 +277,16 @@ class _AddStorePageState extends State<AddStorePage> {
       if(_formkey.currentState!.validate()) {
         LoadingDialog.showLoadingDialog(context, "Creating...");
         await _uploadImages();
-        String idStore = DateTime.now().millisecondsSinceEpoch.toString();
-        await FirebaseFirestore.instance.collection("STORE").doc(idStore).set({
+        int idStore = DateTime.now().millisecondsSinceEpoch;
+        await FirebaseFirestore.instance.collection("STORE").doc(idStore.toString()).set({
           "idStore": idStore,
           "idOwner": FirebaseAuth.instance.currentUser!.uid,
           "storeName": storeName,
           "address": address,
           "phoneNumber": phoneNumber,
           "images": _listUrl,
+          "positive": 0,
+          "negative": 0,
         }).then((value) => {
           LoadingDialog.hideLoadingDialog(context),
           MsgDialog.showMsgDialog(context, "Create Success", "Add to foods for everyone to enjoy"),

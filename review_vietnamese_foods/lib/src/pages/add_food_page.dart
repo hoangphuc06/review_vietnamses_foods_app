@@ -10,7 +10,7 @@ import '../dialogs/loading_dialog.dart';
 import '../dialogs/msg_dilog.dart';
 
 class AddFoodPage extends StatefulWidget {
-  final String idStore;
+  final int idStore;
   const AddFoodPage({Key? key, required this.idStore}) : super(key: key);
 
   @override
@@ -299,15 +299,15 @@ class _AddFoodPageState extends State<AddFoodPage> {
       if(_formkey.currentState!.validate()) {
         LoadingDialog.showLoadingDialog(context, "Creating...");
         await _uploadImages();
-        String idFood = DateTime.now().millisecondsSinceEpoch.toString();
-        await FirebaseFirestore.instance.collection("FOOD").doc(idFood).set({
+        int idFood = DateTime.now().millisecondsSinceEpoch;
+        await FirebaseFirestore.instance.collection("FOOD").doc(idFood.toString()).set({
           "idStore": this.widget.idStore,
           "idFood": idFood,
           "foodName": name,
           "price": price,
           "description": descr,
-          "negative": "0",
-          "positive": "0",
+          "negative": 0,
+          "positive": 0,
           "images": _listUrl,
         }).then((value) => {
           LoadingDialog.hideLoadingDialog(context),
@@ -332,7 +332,7 @@ class _AddFoodPageState extends State<AddFoodPage> {
 
         String filename = DateTime.now().millisecondsSinceEpoch.toString();
 
-        Reference ref = FirebaseStorage.instance.ref().child("FOOD").child(this.widget.idStore).child("food_$filename");
+        Reference ref = FirebaseStorage.instance.ref().child("FOOD").child(this.widget.idStore.toString()).child("food_$filename");
 
         await ref.putFile(_listFile[i]!);
 
