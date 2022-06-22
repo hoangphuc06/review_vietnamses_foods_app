@@ -21,6 +21,7 @@ dependencies:
   cloud_firestore: ^2.5.3
   firebase_storage: ^10.1.0
   image_picker: ^0.8.5+3
+  flutter_image_slideshow: ^0.1.2
 
 dev_dependencies:
   flutter_test:
@@ -48,6 +49,7 @@ flutter:
     - assets/images/
     - assets/images/bg/
     - assets/images/ic/
+    - assets/images/banner/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
