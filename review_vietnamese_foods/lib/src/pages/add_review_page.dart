@@ -42,9 +42,9 @@ class _AddReviewPageState extends State<AddReviewPage> {
             children: [
               _header(),
               SizedBox(height: 10,),
-              _longTextField(reviewController, "Description about food", TextInputType.text, false),
+              _longTextField(reviewController, "Your review", TextInputType.text, false),
               SizedBox(height: 30,),
-              buttonNotIcon(context, "Create Food", Colors.white, Colors.orange, (){
+              buttonNotIcon(context, "Add your review", Colors.white, Colors.orange, (){
                 _addReview();
               }),
               SizedBox(height: 20,),
@@ -136,24 +136,36 @@ class _AddReviewPageState extends State<AddReviewPage> {
 
         String tag;
         final prediction = _classifier.classify(review);
-        if (prediction[1] > prediction[0])
-          tag = "positive";
-        else
-          tag = "negative";
-
-        int idReview = DateTime.now().millisecondsSinceEpoch;
-        await FirebaseFirestore.instance.collection("REVIEW").doc(idReview.toString()).set({
-          "idReview": idReview,
-          "idFood": this.widget.idFood,
-          "idUser": _auth.currentUser!.uid.toString(),
-          "timestamp": idReview,
-          "content": review,
-          "tag": ""
-        }).then((value) => {
-          LoadingDialog.hideLoadingDialog(context),
-          MsgDialog.showMsgDialog(context, "Add Review Success", "Add to foods for everyone to enjoy"),
-          reviewController.clear(),
-        });
+        if (prediction[1] > prediction[0]) {
+          int idReview = DateTime.now().millisecondsSinceEpoch;
+          await FirebaseFirestore.instance.collection("REVIEW").doc(idReview.toString()).set({
+            "idReview": idReview,
+            "idFood": this.widget.idFood,
+            "idUser": _auth.currentUser!.uid.toString(),
+            "timestamp": idReview,
+            "content": review,
+            "tag": "positive"
+          }).then((value) => {
+            LoadingDialog.hideLoadingDialog(context),
+            MsgDialog.showMsgDialog(context, "Add Review Success", "Thanks for your review"),
+            reviewController.clear(),
+          });
+        }
+        else {
+          int idReview = DateTime.now().millisecondsSinceEpoch;
+          await FirebaseFirestore.instance.collection("REVIEW").doc(idReview.toString()).set({
+            "idReview": idReview,
+            "idFood": this.widget.idFood,
+            "idUser": _auth.currentUser!.uid.toString(),
+            "timestamp": idReview,
+            "content": review,
+            "tag": "negative"
+          }).then((value) => {
+            LoadingDialog.hideLoadingDialog(context),
+            MsgDialog.showMsgDialog(context, "Add Review Success", "Add to foods for everyone to enjoy"),
+            reviewController.clear(),
+          });
+        }
       }
     }
     else {
