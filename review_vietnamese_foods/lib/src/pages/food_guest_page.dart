@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:tflite_flutter_plugin_example/src/pages/add_review_page.dart';
+import 'package:tflite_flutter_plugin_example/src/pages/edit_review_page.dart';
 
 class FoodGuestPage extends StatefulWidget {
   final QueryDocumentSnapshot food;
@@ -256,7 +257,7 @@ class _FoodGuestPageState extends State<FoodGuestPage> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => AddReviewPage(idFood: this.widget.food["idFood"],)));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => AddReviewPage(food: this.widget.food,)));
                   },
                   child: Container(
                     width: 100,
@@ -280,19 +281,22 @@ class _FoodGuestPageState extends State<FoodGuestPage> {
             ),
           ),
           StreamBuilder(
-            stream: _firestore.collection("REVIEW").where("idFood", isEqualTo: this.widget.food["idFood"]).snapshots(),
+            stream: _firestore.collection("REVIEW").orderBy("timestamp", descending: true).snapshots(),
             builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasData) {
                 return MediaQuery.removePadding(
                   removeTop: true,
                   context: context,
                   child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, i) {
-                        QueryDocumentSnapshot x = snapshot.data!.docs[i];
+                    shrinkWrap: true,
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, i) {
+                      QueryDocumentSnapshot x = snapshot.data!.docs[i];
+                      if (x["idFood"] == this.widget.food["idFood"])
                         return reviewCard(context, x);
-                      }),
+                      else
+                        return Container();
+                    }),
                 );
               } else {
                 return Center(child: Text("No Data"));
@@ -408,70 +412,110 @@ class _FoodGuestPageState extends State<FoodGuestPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              StreamBuilder(
-                stream: _firestore.collection("USER").where("uid", isEqualTo: review["idUser"]).snapshots(),
-                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.data != null) {
-                    if (snapshot.data!.docs[0]["avatar"] == ""){
-                      return Container(
-                        width: 45,
-                        height: 45,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.orange
-                        ),
-                        child: Icon(Icons.person, color: Colors.white, size: 30,),
-                      );
-                    }
-                    else {
-                      return Container(
-                        width: 45,
-                        height: 45,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white
-                        ),
-                        child: Icon(Icons.person, color: Colors.orange, size: 30,),
-                      );
-                    }
-                  }
-                  else {
-                    return Container();
-                  }
-                },
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  StreamBuilder(
+                    stream: _firestore.collection("USER").where("uid", isEqualTo: review["idUser"]).snapshots(),
+                    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.data != null) {
+                        if (snapshot.data!.docs[0]["avatar"] == ""){
+                          return Container(
+                            width: 45,
+                            height: 45,
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.orange
+                            ),
+                            child: Icon(Icons.person, color: Colors.white, size: 30,),
+                          );
+                        }
+                        else {
+                          return Container(
+                            width: 45,
+                            height: 45,
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white
+                            ),
+                            child: Icon(Icons.person, color: Colors.orange, size: 30,),
+                          );
+                        }
+                      }
+                      else {
+                        return Container();
+                      }
+                    },
+                  ),
+                  SizedBox(width: 20,),
+                  StreamBuilder(
+                    stream: _firestore.collection("USER").where("uid", isEqualTo: review["idUser"]).snapshots(),
+                    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.data != null) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              snapshot.data!.docs[0]["name"],
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 17
+                              ),
+                            ),
+                            SizedBox(height: 5,),
+                            Text(
+                              DateTime.fromMillisecondsSinceEpoch(review["timestamp"]).toString(),
+                              style: TextStyle(
+                                color: Colors.grey
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                      else {
+                        return Container();
+                      }
+                    },
+                  ),
+                ],
               ),
-              SizedBox(width: 20,),
-              StreamBuilder(
-                stream: _firestore.collection("USER").where("uid", isEqualTo: review["idUser"]).snapshots(),
-                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.data != null) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          snapshot.data!.docs[0]["name"],
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 17
-                          ),
-                        ),
-                        SizedBox(height: 5,),
-                        Text(
-                          DateTime.fromMillisecondsSinceEpoch(review["timestamp"]).toString(),
-                          style: TextStyle(
-                            color: Colors.grey
-                          ),
-                        ),
-                      ],
-                    );
-                  }
-                  else {
-                    return Container();
-                  }
+              review["idUser"] == _auth.currentUser!.uid.toString()?
+              GestureDetector(
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                      builder: (context) {
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ListTile(
+                              leading: new Icon(Icons.edit),
+                              title: new Text('Edit Review'),
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => EditReviewPage(review: review,)));
+                              },
+                            ),
+                            ListTile(
+                              leading: new Icon(Icons.delete),
+                              title: new Text('Delete Review'),
+                              onTap: () {
+                                Navigator.pop(context);
+                                _deleteReview(context, review);
+                              },
+                            ),
+                          ],
+                        );
+                      }
+                  );
+
                 },
-              ),
+                child: Icon(Icons.more_vert, color: Colors.grey,)
+              )
+              : Container()
             ],
           ),
           SizedBox(height: 10,),
@@ -533,6 +577,33 @@ class _FoodGuestPageState extends State<FoodGuestPage> {
         ),
       ),
     );
+  }
+
+  void _deleteReview(BuildContext context, QueryDocumentSnapshot review) async {
+    if (review["tag"] == "positive") {
+      await FirebaseFirestore.instance.collection('FOOD').where("idFood", isEqualTo: this.widget.food["idFood"]).get().then((value) {
+        FirebaseFirestore.instance.collection("FOOD").doc(this.widget.food["idFood"].toString()).update({
+          "positive": value.docs[0].data()["positive"] - 1,
+        });
+      });
+      await FirebaseFirestore.instance.collection('STORE').where("idStore", isEqualTo: this.widget.food["idStore"]).get().then((value) {
+        FirebaseFirestore.instance.collection("STORE").doc(this.widget.food["idStore"].toString()).update({
+          "positive": value.docs[0].data()["positive"] - 1,
+        });
+      });
+      _firestore.collection("REVIEW").doc(review["idReview"].toString()).delete();
+    }
+    else {
+      await FirebaseFirestore.instance.collection("FOOD").doc(this.widget.food["idFood"].toString()).update({
+        "negative": this.widget.food["negative"] - 1,
+      });
+      await FirebaseFirestore.instance.collection('STORE').where("idStore", isEqualTo: this.widget.food["idStore"]).get().then((value) {
+        FirebaseFirestore.instance.collection("STORE").doc(this.widget.food["idStore"].toString()).update({
+          "negative": value.docs[0].data()["negative"] - 1,
+        });
+      });
+      _firestore.collection("REVIEW").firestore.doc(review["idReview"].toString()).delete();
+    }
   }
 }
 

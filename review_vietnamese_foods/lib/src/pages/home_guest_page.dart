@@ -144,7 +144,7 @@ class _HomeGuestPageState extends State<HomeGuestPage> {
                       color: Colors.white,
                       padding: EdgeInsets.only(left: 8, top: 10),
                       child: StreamBuilder(
-                        stream: _firestore.collection("STORE").orderBy("positive", descending: true).snapshots(),
+                        stream: _firestore.collection("STORE").orderBy("positive", descending: true).limit(5).snapshots(),
                         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                           if (snapshot.hasData) {
                             return ListView.builder(
@@ -185,7 +185,7 @@ class _HomeGuestPageState extends State<HomeGuestPage> {
                       ),
                     ),
                     StreamBuilder(
-                      stream: _firestore.collection("FOOD").orderBy("positive", descending: true).snapshots(),
+                      stream: _firestore.collection("FOOD").orderBy("positive", descending: true).limit(5).snapshots(),
                       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                         if (snapshot.hasData) {
                           return MediaQuery.removePadding(
