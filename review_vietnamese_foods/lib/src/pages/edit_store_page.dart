@@ -323,9 +323,9 @@ class _EditStorePageState extends State<EditStorePage> {
 
     if (storeName.isNotEmpty && address.isNotEmpty && phoneNumber.isNotEmpty) {
       if (_formkey.currentState!.validate()) {
-        LoadingDialog.showLoadingDialog(context, "Creating...");
+        LoadingDialog.showLoadingDialog(context, "Editing...");
         await _uploadImages();
-        await FirebaseFirestore.instance.collection("STORE").doc(this.widget.store["idStore"]).update({
+        await FirebaseFirestore.instance.collection("STORE").doc(this.widget.store["idStore"].toString()).update({
           "storeName": storeName,
           "address": address,
           "phoneNumber": phoneNumber,

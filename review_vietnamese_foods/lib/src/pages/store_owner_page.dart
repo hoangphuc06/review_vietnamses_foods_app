@@ -62,7 +62,7 @@ class _StoreOwnerPageState extends State<StoreOwnerPage> {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Text(
-                                      this.widget.store["storeName"],
+                                      snapshot.data!.docs[0]["storeName"],
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,

@@ -56,35 +56,49 @@ class _FoodOwnerPageState extends State<FoodOwnerPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             StreamBuilder(
-                              stream: _firestore.collection("STORE").where("idStore", isEqualTo: this.widget.food["idStore"]).snapshots(),
-                              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                                if (snapshot.data != null) {
-                                  return Text(
-                                    this.widget.food["foodName"] + " - " + snapshot.data!.docs[0]["storeName"],
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 20
-                                    ),
+                              stream: _firestore.collection("FOOD").where("idFood", isEqualTo: this.widget.food["idFood"]).snapshots(),
+                              builder: (context, AsyncSnapshot<QuerySnapshot> snap) {
+                                if (snap.data != null) {
+                                  return Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      StreamBuilder(
+                                        stream: _firestore.collection("STORE").where("idStore", isEqualTo: this.widget.food["idStore"]).snapshots(),
+                                        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                                          if (snapshot.data != null) {
+                                            return Text(
+                                              snap.data!.docs[0]["foodName"] + " - " + snapshot.data!.docs[0]["storeName"],
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 20
+                                              ),
+                                            );
+                                          } else {
+                                            return Container();
+                                          }
+                                        },
+                                      ),
+                                      SizedBox(height: 5,),
+                                      Text(
+                                        "Price: " + snap.data!.docs[0]["price"] + " VND",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.orange,
+                                        ),
+                                      ),
+                                      SizedBox(height: 5,),
+                                      Text(
+                                        "Category: " + snap.data!.docs[0]["category"],
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
                                   );
                                 } else {
                                   return Container();
                                 }
                               },
-                            ),
-                            SizedBox(height: 5,),
-                            Text(
-                              "Price: " + this.widget.food["price"] + " VND",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: Colors.orange,
-                              ),
-                            ),
-                            SizedBox(height: 5,),
-                            Text(
-                              "Category: " + this.widget.food["category"],
-                              style: TextStyle(
-                                color: Colors.grey,
-                              ),
                             ),
                             SizedBox(height: 5,),
                             StreamBuilder(
@@ -300,6 +314,7 @@ class _FoodOwnerPageState extends State<FoodOwnerPage> {
       return Image.network(
         this.widget.food["images"][0],
         height: 250,
+        width: double.infinity,
         fit: BoxFit.cover,
       );
     }
@@ -487,7 +502,7 @@ class _FoodOwnerPageState extends State<FoodOwnerPage> {
   Widget foodCard(BuildContext context, QueryDocumentSnapshot food) {
     return GestureDetector(
       onTap: () {
-        //Navigator.push(context, MaterialPageRoute(builder: (context) => FoodGuestPage(food: food,)));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => FoodOwnerPage(food: food,)));
       },
       child: Container(
         height: 100,
@@ -548,32 +563,6 @@ class _FoodOwnerPageState extends State<FoodOwnerPage> {
     );
   }
 
-  void _deleteReview(BuildContext context, QueryDocumentSnapshot review) async {
-    if (review["tag"] == "positive") {
-      await FirebaseFirestore.instance.collection('FOOD').where("idFood", isEqualTo: this.widget.food["idFood"]).get().then((value) {
-        FirebaseFirestore.instance.collection("FOOD").doc(this.widget.food["idFood"].toString()).update({
-          "positive": value.docs[0].data()["positive"] - 1,
-        });
-      });
-      await FirebaseFirestore.instance.collection('STORE').where("idStore", isEqualTo: this.widget.food["idStore"]).get().then((value) {
-        FirebaseFirestore.instance.collection("STORE").doc(this.widget.food["idStore"].toString()).update({
-          "positive": value.docs[0].data()["positive"] - 1,
-        });
-      });
-      _firestore.collection("REVIEW").doc(review["idReview"].toString()).delete();
-    }
-    else {
-      await FirebaseFirestore.instance.collection("FOOD").doc(this.widget.food["idFood"].toString()).update({
-        "negative": this.widget.food["negative"] - 1,
-      });
-      await FirebaseFirestore.instance.collection('STORE').where("idStore", isEqualTo: this.widget.food["idStore"]).get().then((value) {
-        FirebaseFirestore.instance.collection("STORE").doc(this.widget.food["idStore"].toString()).update({
-          "negative": value.docs[0].data()["negative"] - 1,
-        });
-      });
-      _firestore.collection("REVIEW").firestore.doc(review["idReview"].toString()).delete();
-    }
-  }
 }
 
 class MyDelegate extends SliverPersistentHeaderDelegate {
