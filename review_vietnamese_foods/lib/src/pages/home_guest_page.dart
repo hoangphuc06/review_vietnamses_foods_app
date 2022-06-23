@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:tflite_flutter_plugin_example/src/pages/food_guest_page.dart';
+import 'package:tflite_flutter_plugin_example/src/pages/look_up_page.dart';
 import 'package:tflite_flutter_plugin_example/src/pages/store_guest_page.dart';
 
 class HomeGuestPage extends StatefulWidget {
@@ -65,30 +66,35 @@ class _HomeGuestPageState extends State<HomeGuestPage> {
                 }
               },
             ),
-            Container(
-              color: Colors.orange,
-              padding: EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => LookUpPage()));
+              },
               child: Container(
-                width: double.infinity,
-                height: 40,
-                decoration: BoxDecoration(
-                  //color: Color.fromRGBO(142, 142, 147, 1.2),
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10)
-                ),
-                child: Padding(
-                  padding: EdgeInsets.only(left: 8),
-                  child: Row(
-                    children: [
-                      Icon(Icons.search, color: Colors.grey,),
-                      SizedBox(width: 5,),
-                      Text(
-                        "Find your food...",
-                        style: TextStyle(
-                          color: Colors.grey
-                        ),
-                      )
-                    ],
+                color: Colors.orange,
+                padding: EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
+                child: Container(
+                  width: double.infinity,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    //color: Color.fromRGBO(142, 142, 147, 1.2),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10)
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 8),
+                    child: Row(
+                      children: [
+                        Icon(Icons.search, color: Colors.grey,),
+                        SizedBox(width: 5,),
+                        Text(
+                          "Find your food...",
+                          style: TextStyle(
+                            color: Colors.grey
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
