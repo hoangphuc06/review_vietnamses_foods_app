@@ -154,19 +154,24 @@ class _HomeOwnerPageState extends State<HomeOwnerPage> {
               ],
             ),
           ),
+          SizedBox(height: 4,),
           SingleChildScrollView(
             child: StreamBuilder(
               stream: _firestore.collection("STORE").where("idOwner", isEqualTo: userMap!['uid']).snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.data != null) {
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    physics: ScrollPhysics(),
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (context ,i) {
-                      QueryDocumentSnapshot store = snapshot.data!.docs[i];
-                      return cardStore(store, context);
-                    }
+                  return MediaQuery.removePadding(
+                    context: context,
+                    removeTop: true,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: ScrollPhysics(),
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context ,i) {
+                        QueryDocumentSnapshot store = snapshot.data!.docs[i];
+                        return cardStore(store, context);
+                      }
+                    ),
                   );
                 } else {
                   return Container();
@@ -186,7 +191,7 @@ class _HomeOwnerPageState extends State<HomeOwnerPage> {
         Navigator.push(context, MaterialPageRoute(builder: (context) => StoreOwnerPage(store: store,)));
       },
       child: Container(
-        margin: EdgeInsets.only(left: 8, right: 8, bottom: 10,),
+        margin: EdgeInsets.only(bottom: 4,),
         height: (size.width - 16) * 2/4,
         width: size.width - 16,
         decoration: BoxDecoration(

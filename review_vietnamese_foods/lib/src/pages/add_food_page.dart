@@ -24,6 +24,7 @@ class _AddFoodPageState extends State<AddFoodPage> {
   final _formkey = GlobalKey<FormState>();
   List<File?> _listFile = [null, null, null, null];
   List<String> _listUrl = ["", "", "", ""];
+  String dropdownValue = 'Rice';
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -41,7 +42,16 @@ class _AddFoodPageState extends State<AddFoodPage> {
                 SizedBox(height: 10,),
                 _textField(foodNameController, "Food Name", TextInputType.text, false),
                 SizedBox(height: 10,),
-                _textField(priceController, "Food Price", TextInputType.number, false),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _dropdownTextField(),
+                    Container(
+                      width: 200,
+                      child: _textField(priceController, "Food Price", TextInputType.number, false)
+                    ),
+                  ],
+                ),
                 SizedBox(height: 10,),
                 _longTextField(descriptionController, "Description about food", TextInputType.text, false),
                 SizedBox(height: 30,),
@@ -221,6 +231,37 @@ class _AddFoodPageState extends State<AddFoodPage> {
     );
   }
 
+  Widget _dropdownTextField() {
+    return Container(
+      height: 55,
+      padding: EdgeInsets.only(left: 20.0, right: 20),
+      decoration: BoxDecoration(
+          color: Color.fromRGBO(142, 142, 147, 1.2),
+          borderRadius: BorderRadius.circular(10.0)),
+      child: DropdownButton<String>(
+        value: dropdownValue,
+        icon: const Icon(Icons.arrow_downward, size: 16,),
+        elevation: 16,
+        style: const TextStyle(color: Colors.black),
+        underline: Container(
+          height: 0,
+        ),
+        onChanged: (String? newValue) {
+          setState(() {
+            dropdownValue = newValue!;
+          });
+        },
+        items: <String>['Rice', 'Soup', 'Noodle', 'Cake', 'Fast Food', 'Fruit', 'Dessert']
+            .map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value, style: TextStyle(color: Colors.black, fontSize: 16),),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
   Widget _textField(TextEditingController textEditingController, String hintText, TextInputType textInputType, bool isPass) {
     return Container(
       padding: EdgeInsets.only(left: 20.0),
@@ -305,6 +346,7 @@ class _AddFoodPageState extends State<AddFoodPage> {
           "idFood": idFood,
           "foodName": name,
           "price": price,
+          "category": dropdownValue,
           "description": descr,
           "negative": 0,
           "positive": 0,

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:tflite_flutter_plugin_example/src/pages/food_guest_page.dart';
+import 'package:tflite_flutter_plugin_example/src/pages/store_guest_page.dart';
 
 class HomeGuestPage extends StatefulWidget {
   const HomeGuestPage({Key? key}) : super(key: key);
@@ -43,7 +44,7 @@ class _HomeGuestPageState extends State<HomeGuestPage> {
                   return Container(
                     padding: EdgeInsets.only(left: 8),
                     width: double.infinity,
-                    color: Colors.white,
+                    color: Colors.orange,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -51,8 +52,8 @@ class _HomeGuestPageState extends State<HomeGuestPage> {
                         Text(
                           "Hi " + snapshot.data!.docs[0]["name"] + ",",
                           style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w400,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
                             fontSize: 15
                           ),
                         ),
@@ -65,13 +66,14 @@ class _HomeGuestPageState extends State<HomeGuestPage> {
               },
             ),
             Container(
-              color: Colors.white,
+              color: Colors.orange,
               padding: EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
               child: Container(
                 width: double.infinity,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: Color.fromRGBO(142, 142, 147, 1.2),
+                  //color: Color.fromRGBO(142, 142, 147, 1.2),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(10)
                 ),
                 child: Padding(
@@ -118,7 +120,6 @@ class _HomeGuestPageState extends State<HomeGuestPage> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 10,),
                     Container(
                       width: double.infinity,
                       color: Colors.white,
@@ -126,7 +127,7 @@ class _HomeGuestPageState extends State<HomeGuestPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: EdgeInsets.only(left: 8, top: 8),
+                            padding: EdgeInsets.only(left: 8, top: 12),
                             child: Text(
                               "Shop",
                               style: TextStyle(
@@ -216,27 +217,32 @@ class _HomeGuestPageState extends State<HomeGuestPage> {
   }
 
   Widget storeCard(BuildContext context,  QueryDocumentSnapshot store) {
-    return Container(
-      margin: EdgeInsets.only(right: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Image.network(store["images"][0], height: 150, width: 200, fit: BoxFit.cover,),
-          SizedBox(height: 10,),
-          Text(
-            store["storeName"],
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => StoreGuestPage(store: store,)));
+      },
+      child: Container(
+        margin: EdgeInsets.only(right: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.network(store["images"][0], height: 150, width: 200, fit: BoxFit.cover,),
+            SizedBox(height: 10,),
+            Text(
+              store["storeName"],
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
-          SizedBox(height: 5,),
-          Text(
-            store["address"],
-            style: TextStyle(
-              color: Colors.grey
+            SizedBox(height: 5,),
+            Text(
+              store["address"],
+              style: TextStyle(
+                color: Colors.grey
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -276,10 +282,26 @@ class _HomeGuestPageState extends State<HomeGuestPage> {
                 ),
                 SizedBox(height: 5,),
                 Text(
-                  food["price"] + " VND",
+                  "Price: " + food["price"] + " VND",
                   style: TextStyle(
                       color: Colors.grey
                   ),
+                ),
+                SizedBox(height: 5,),
+                StreamBuilder(
+                  stream: _firestore.collection("REVIEW").where("idFood", isEqualTo: food["idFood"]).snapshots(),
+                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.data != null) {
+                      return Text(
+                        "Reviews: " + snapshot.data!.docs.length.toString(),
+                        style: TextStyle(
+                            color: Colors.grey
+                        ),
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
                 ),
               ],
             )

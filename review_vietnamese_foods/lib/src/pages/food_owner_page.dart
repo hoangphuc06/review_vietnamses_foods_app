@@ -1,22 +1,18 @@
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
-import 'package:tflite_flutter_plugin_example/src/pages/add_review_page.dart';
-import 'package:tflite_flutter_plugin_example/src/pages/edit_review_page.dart';
+import 'package:tflite_flutter_plugin_example/src/pages/edit_food_page.dart';
 
-class FoodGuestPage extends StatefulWidget {
+class FoodOwnerPage extends StatefulWidget {
   final QueryDocumentSnapshot food;
-  const FoodGuestPage({Key? key, required this.food}) : super(key: key);
+  const FoodOwnerPage({Key? key, required this.food}) : super(key: key);
 
   @override
-  State<FoodGuestPage> createState() => _FoodGuestPageState();
+  State<FoodOwnerPage> createState() => _FoodOwnerPageState();
 }
 
-class _FoodGuestPageState extends State<FoodGuestPage> {
-
+class _FoodOwnerPageState extends State<FoodOwnerPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -32,6 +28,13 @@ class _FoodGuestPageState extends State<FoodGuestPage> {
           headerSliverBuilder: (context, isScolled){
             return [
               SliverAppBar(
+                actions: [
+                  IconButton(icon: Icon(Icons.settings, color: Colors.white,),
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => EditFoodPage(food: this.widget.food,)));
+                    },
+                  ),
+                ],
                 iconTheme: IconThemeData(
                     color: Colors.white
                 ),
@@ -263,46 +266,7 @@ class _FoodGuestPageState extends State<FoodGuestPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            margin: EdgeInsets.only(top: 4, bottom: 4),
-            padding: EdgeInsets.only(left: 16, right: 16),
-            height: 70,
-            width: double.infinity,
-            color: Colors.orange,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Do you have a review for \nthis food?",
-                  style: TextStyle(
-                    color: Colors.white
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => AddReviewPage(food: this.widget.food,)));
-                  },
-                  child: Container(
-                    width: 100,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.white
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Review Now",
-                        style: TextStyle(
-                          color: Colors.orange,
-                          fontWeight: FontWeight.bold
-                        ),
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
+          SizedBox(height: 4,),
           StreamBuilder(
             stream: _firestore.collection("REVIEW").orderBy("timestamp", descending: true).snapshots(),
             builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -311,15 +275,15 @@ class _FoodGuestPageState extends State<FoodGuestPage> {
                   removeTop: true,
                   context: context,
                   child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (context, i) {
-                      QueryDocumentSnapshot x = snapshot.data!.docs[i];
-                      if (x["idFood"] == this.widget.food["idFood"])
-                        return reviewCard(context, x);
-                      else
-                        return Container();
-                    }),
+                      shrinkWrap: true,
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, i) {
+                        QueryDocumentSnapshot x = snapshot.data!.docs[i];
+                        if (x["idFood"] == this.widget.food["idFood"])
+                          return reviewCard(context, x);
+                        else
+                          return Container();
+                      }),
                 );
               } else {
                 return Center(child: Text("No Data"));
@@ -424,7 +388,7 @@ class _FoodGuestPageState extends State<FoodGuestPage> {
       );
     }
   }
-  
+
   Widget reviewCard(BuildContext context, QueryDocumentSnapshot review) {
     return Container(
       color: Colors.white,
@@ -484,15 +448,15 @@ class _FoodGuestPageState extends State<FoodGuestPage> {
                             Text(
                               snapshot.data!.docs[0]["name"],
                               style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 17
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 17
                               ),
                             ),
                             SizedBox(height: 5,),
                             Text(
                               DateTime.fromMillisecondsSinceEpoch(review["timestamp"]).toString(),
                               style: TextStyle(
-                                color: Colors.grey
+                                  color: Colors.grey
                               ),
                             ),
                           ],
@@ -505,40 +469,6 @@ class _FoodGuestPageState extends State<FoodGuestPage> {
                   ),
                 ],
               ),
-              review["idUser"] == _auth.currentUser!.uid.toString()?
-              GestureDetector(
-                onTap: () {
-                  showModalBottomSheet(
-                    context: context,
-                      builder: (context) {
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            ListTile(
-                              leading: new Icon(Icons.edit),
-                              title: new Text('Edit Review'),
-                              onTap: () {
-                                Navigator.pop(context);
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => EditReviewPage(review: review,)));
-                              },
-                            ),
-                            ListTile(
-                              leading: new Icon(Icons.delete),
-                              title: new Text('Delete Review'),
-                              onTap: () {
-                                Navigator.pop(context);
-                                _deleteReview(context, review);
-                              },
-                            ),
-                          ],
-                        );
-                      }
-                  );
-
-                },
-                child: Icon(Icons.more_vert, color: Colors.grey,)
-              )
-              : Container()
             ],
           ),
           SizedBox(height: 10,),
@@ -557,7 +487,7 @@ class _FoodGuestPageState extends State<FoodGuestPage> {
   Widget foodCard(BuildContext context, QueryDocumentSnapshot food) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => FoodGuestPage(food: food,)));
+        //Navigator.push(context, MaterialPageRoute(builder: (context) => FoodGuestPage(food: food,)));
       },
       child: Container(
         height: 100,

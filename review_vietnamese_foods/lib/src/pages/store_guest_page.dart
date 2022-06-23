@@ -2,23 +2,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
-import 'package:tflite_flutter_plugin_example/src/pages/add_food_page.dart';
-import 'package:tflite_flutter_plugin_example/src/pages/food_owner_page.dart';
+import 'package:tflite_flutter_plugin_example/src/pages/food_guest_page.dart';
 
-import 'edit_store_page.dart';
-
-class StoreOwnerPage extends StatefulWidget {
+class StoreGuestPage extends StatefulWidget {
   final QueryDocumentSnapshot store;
-  const StoreOwnerPage({Key? key, required this.store}) : super(key: key);
+  const StoreGuestPage({Key? key, required this.store}) : super(key: key);
 
   @override
-  State<StoreOwnerPage> createState() => _StoreOwnerPageState();
+  State<StoreGuestPage> createState() => _StoreGuestPageState();
 }
 
-class _StoreOwnerPageState extends State<StoreOwnerPage> {
+class _StoreGuestPageState extends State<StoreGuestPage> {
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +25,6 @@ class _StoreOwnerPageState extends State<StoreOwnerPage> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            actions: [
-              IconButton(icon: Icon(Icons.settings, color: Colors.white,),
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => EditStorePage(store: this.widget.store,)));
-                },
-              ),
-            ],
             iconTheme: IconThemeData(
                 color: Colors.white
             ),
@@ -51,7 +41,7 @@ class _StoreOwnerPageState extends State<StoreOwnerPage> {
                     return Stack(
                         children: [
                           _imageFoodView(),
-                          Container(
+                         Container(
                             height: 250, width: size.width,
                             color: Colors.black.withOpacity(0.4),
                           ),
@@ -125,16 +115,6 @@ class _StoreOwnerPageState extends State<StoreOwnerPage> {
             ),
           ]))
         ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => AddFoodPage(idStore: this.widget.store["idStore"],)));
-        },
-        label: Text("Add Food"),
-        foregroundColor: Colors.white,
-        icon: Container(
-          child: Icon(Icons.add),
-        ),
       ),
     );
   }
@@ -234,78 +214,10 @@ class _StoreOwnerPageState extends State<StoreOwnerPage> {
     }
   }
 
-  Widget _foodItem(QueryDocumentSnapshot food, BuildContext context) {
-    return GestureDetector(
-      onTap: (){
-
-      },
-      child: Container(
-        decoration: BoxDecoration(
-
-            color: Colors.white,
-        ),
-        padding: EdgeInsets.all(8),
-        margin: EdgeInsets.only(bottom: 4),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              child: Image(
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
-                image: NetworkImage(food["images"][0]),
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.only(left: 20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                      margin: EdgeInsets.only(bottom: 5.0),
-                      width: 250,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            food["foodName"],
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                                fontSize: 20
-                            ),
-                          ),
-                        ],
-                      )),
-                  Row(
-                    children: [
-                      Container(
-                        //alignment: Alignment.centerLeft,
-                        margin: EdgeInsets.only(bottom: 7.0),
-                        child: Text(
-                          food["price"] + " VNĐ",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 15)
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget foodCard(BuildContext context, QueryDocumentSnapshot food) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => FoodOwnerPage(food: food,)));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => FoodGuestPage(food: food,)));
       },
       child: Container(
         height: 100,
@@ -366,5 +278,3 @@ class _StoreOwnerPageState extends State<StoreOwnerPage> {
     );
   }
 }
-
-
