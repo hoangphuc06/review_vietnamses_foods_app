@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:tflite_flutter_plugin_example/src/pages/food_guest_page.dart';
 import 'package:tflite_flutter_plugin_example/src/pages/look_up_page.dart';
+import 'package:tflite_flutter_plugin_example/src/pages/my_profile_page.dart';
 import 'package:tflite_flutter_plugin_example/src/pages/store_guest_page.dart';
 
 class HomeGuestPage extends StatefulWidget {
@@ -18,7 +19,8 @@ class _HomeGuestPageState extends State<HomeGuestPage> {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  late PageController _pageController;
+  Map<String, dynamic>? userMap;
+  bool isLoading = true;
 
   final List<String> images = [
     'assets/images/banner/banner1.png',
@@ -28,75 +30,114 @@ class _HomeGuestPageState extends State<HomeGuestPage> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(viewportFraction: 0.8);
+    _firestore.collection('USER').where("uid", isEqualTo: _auth.currentUser!.uid.toString()).get().then((value) {
+      setState(() {
+        userMap = value.docs[0].data();
+        print(userMap);
+        isLoading = false;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white.withOpacity(0.9),
       body: Container(
         child: Column(
           children: [
-            StreamBuilder(
-              stream: _firestore.collection("USER").where("uid", isEqualTo: _auth.currentUser!.uid.toString()).snapshots(),
-              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.data != null) {
-                  return Container(
-                    padding: EdgeInsets.only(left: 8),
-                    width: double.infinity,
-                    color: Colors.orange,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 50,),
-                        Text(
-                          "Hi " + snapshot.data!.docs[0]["name"] + ",",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 15
+            // StreamBuilder(
+            //   stream: _firestore.collection("USER").where("uid", isEqualTo: _auth.currentUser!.uid.toString()).snapshots(),
+            //   builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            //     if (snapshot.data != null) {
+            //       return Container(
+            //         padding: EdgeInsets.only(left: 12),
+            //         width: double.infinity,
+            //         color: Colors.orange,
+            //         child: Column(
+            //           crossAxisAlignment: CrossAxisAlignment.start,
+            //           children: [
+            //             SizedBox(height: 50,),
+            //             Text(
+            //               "Hi " + snapshot.data!.docs[0]["name"] + ",",
+            //               style: TextStyle(
+            //                 color: Colors.white,
+            //                 fontWeight: FontWeight.w500,
+            //                 fontSize: 15
+            //               ),
+            //             ),
+            //           ],
+            //         ),
+            //       );
+            //     } else {
+            //       return Container();
+            //     }
+            //   },
+            // ),
+            Container(
+              padding: EdgeInsets.only(top: 40),
+              width: double.infinity,
+              color: Colors.orange,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => LookUpPage()));
+                    },
+                    child: Container(
+                      color: Colors.orange,
+                      padding: EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 16),
+                      child: Container(
+                        width: size.width * 3.15/4,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          //color: Color.fromRGBO(142, 142, 147, 1.2),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10)
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 8),
+                          child: Row(
+                            children: [
+                              Icon(Icons.search, color: Colors.grey,),
+                              SizedBox(width: 5,),
+                              Text(
+                                "Find your food...",
+                                style: TextStyle(
+                                  color: Colors.grey
+                                ),
+                              )
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  );
-                } else {
-                  return Container();
-                }
-              },
-            ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => LookUpPage()));
-              },
-              child: Container(
-                color: Colors.orange,
-                padding: EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
-                child: Container(
-                  width: double.infinity,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    //color: Color.fromRGBO(142, 142, 147, 1.2),
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10)
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 8),
-                    child: Row(
-                      children: [
-                        Icon(Icons.search, color: Colors.grey,),
-                        SizedBox(width: 5,),
-                        Text(
-                          "Find your food...",
-                          style: TextStyle(
-                            color: Colors.grey
-                          ),
-                        )
-                      ],
+                      ),
                     ),
                   ),
-                ),
+                  GestureDetector(
+                    onTap: () {
+                      if (isLoading == false)
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => MyProfilePage(userMap: userMap!,)));
+                    },
+                    child: Container(
+                      color: Colors.orange,
+                      padding: EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 16),
+                      child: Container(
+                        width: size.width * 0.5/4,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          //color: Color.fromRGBO(142, 142, 147, 1.2),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10)
+                        ),
+                        child: Center(
+                          child: Icon(Icons.person, color: Colors.grey,),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Expanded(

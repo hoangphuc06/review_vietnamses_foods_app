@@ -441,9 +441,12 @@ class _FoodOwnerPageState extends State<FoodOwnerPage> {
                             height: 45,
                             decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Colors.white
+                                color: Colors.white,
+                                image: DecorationImage(
+                                    image: NetworkImage(snapshot.data!.docs[0]["avatar"]),
+                                    fit: BoxFit.cover
+                                )
                             ),
-                            child: Icon(Icons.person, color: Colors.orange, size: 30,),
                           );
                         }
                       }
