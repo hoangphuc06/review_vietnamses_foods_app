@@ -472,7 +472,11 @@ class _FoodOwnerPageState extends State<FoodOwnerPage> {
                             ),
                             SizedBox(height: 5,),
                             Text(
-                              DateTime.fromMillisecondsSinceEpoch(review["timestamp"]).toString(),
+                              DateTime.fromMillisecondsSinceEpoch(review["timestamp"]).day.toString()
+                                  + "/" + DateTime.fromMillisecondsSinceEpoch(review["timestamp"]).month.toString()
+                                  + "/" + DateTime.fromMillisecondsSinceEpoch(review["timestamp"]).year.toString()
+                                  + " - " + DateTime.fromMillisecondsSinceEpoch(review["timestamp"]).hour.toString()
+                                  + ":" + DateTime.fromMillisecondsSinceEpoch(review["timestamp"]).minute.toString(),
                               style: TextStyle(
                                   color: Colors.grey
                               ),
