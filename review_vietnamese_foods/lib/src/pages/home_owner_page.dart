@@ -155,28 +155,30 @@ class _HomeOwnerPageState extends State<HomeOwnerPage> {
             ),
           ),
           SizedBox(height: 4,),
-          SingleChildScrollView(
-            child: StreamBuilder(
-              stream: _firestore.collection("STORE").where("idOwner", isEqualTo: userMap!['uid']).snapshots(),
-              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.data != null) {
-                  return MediaQuery.removePadding(
-                    context: context,
-                    removeTop: true,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      physics: ScrollPhysics(),
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context ,i) {
-                        QueryDocumentSnapshot store = snapshot.data!.docs[i];
-                        return cardStore(store, context);
-                      }
-                    ),
-                  );
-                } else {
-                  return Container();
-                }
-              },
+          Expanded(
+            child: SingleChildScrollView(
+              child: StreamBuilder(
+                stream: _firestore.collection("STORE").where("idOwner", isEqualTo: userMap!['uid']).snapshots(),
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.data != null) {
+                    return MediaQuery.removePadding(
+                      context: context,
+                      removeTop: true,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: ScrollPhysics(),
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (context ,i) {
+                          QueryDocumentSnapshot store = snapshot.data!.docs[i];
+                          return cardStore(store, context);
+                        }
+                      ),
+                    );
+                  } else {
+                    return Container();
+                  }
+                },
+              ),
             ),
           ),
         ],
