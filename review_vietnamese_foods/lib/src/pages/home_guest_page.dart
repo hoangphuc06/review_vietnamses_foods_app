@@ -22,11 +22,6 @@ class _HomeGuestPageState extends State<HomeGuestPage> {
   Map<String, dynamic>? userMap;
   bool isLoading = true;
 
-  final List<String> images = [
-    'assets/images/banner/banner1.png',
-    'assets/images/banner/banner2.png',
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -47,34 +42,6 @@ class _HomeGuestPageState extends State<HomeGuestPage> {
       body: Container(
         child: Column(
           children: [
-            // StreamBuilder(
-            //   stream: _firestore.collection("USER").where("uid", isEqualTo: _auth.currentUser!.uid.toString()).snapshots(),
-            //   builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            //     if (snapshot.data != null) {
-            //       return Container(
-            //         padding: EdgeInsets.only(left: 12),
-            //         width: double.infinity,
-            //         color: Colors.orange,
-            //         child: Column(
-            //           crossAxisAlignment: CrossAxisAlignment.start,
-            //           children: [
-            //             SizedBox(height: 50,),
-            //             Text(
-            //               "Hi " + snapshot.data!.docs[0]["name"] + ",",
-            //               style: TextStyle(
-            //                 color: Colors.white,
-            //                 fontWeight: FontWeight.w500,
-            //                 fontSize: 15
-            //               ),
-            //             ),
-            //           ],
-            //         ),
-            //       );
-            //     } else {
-            //       return Container();
-            //     }
-            //   },
-            // ),
             Container(
               padding: EdgeInsets.only(top: 40),
               width: double.infinity,
@@ -165,6 +132,10 @@ class _HomeGuestPageState extends State<HomeGuestPage> {
                           'assets/images/banner/banner2.png',
                           fit: BoxFit.cover,
                         ),
+                        Image.asset(
+                          'assets/images/banner/banner3.png',
+                          fit: BoxFit.cover,
+                        ),
                       ],
                     ),
                     Container(
@@ -234,6 +205,49 @@ class _HomeGuestPageState extends State<HomeGuestPage> {
                     ),
                     StreamBuilder(
                       stream: _firestore.collection("FOOD").orderBy("positive", descending: true).limit(5).snapshots(),
+                      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.hasData) {
+                          return MediaQuery.removePadding(
+                            removeTop: true,
+                            context: context,
+                            child: ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                itemCount: snapshot.data!.docs.length,
+                                itemBuilder: (context, i) {
+                                  QueryDocumentSnapshot x = snapshot.data!.docs[i];
+                                  return foodCard(context, x);
+                                }),
+                          );
+                        } else {
+                          return Center(child: Text("No Data"));
+                        }
+                      },
+                    ),
+                    SizedBox(height: 10,),
+                    Container(
+                      width: double.infinity,
+                      color: Colors.white,
+                      margin: EdgeInsets.only(bottom: 4),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(left: 8, top: 8, bottom: 8),
+                            child: Text(
+                              "New Food",
+                              style: TextStyle(
+                                  color: Colors.orange,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    StreamBuilder(
+                      stream: _firestore.collection("FOOD").orderBy("idFood", descending: true).limit(5).snapshots(),
                       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                         if (snapshot.hasData) {
                           return MediaQuery.removePadding(
